@@ -1,0 +1,23 @@
+{
+  "name": "remote-app",
+  "version": "1.0.0",
+  "description": "rdp remote-app useing node-freerdp2",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server/server.js"
+  },
+  "keywords": [
+    "remote-app",
+    "node-freerdp2",
+    "rdp",
+    "mstsc"
+  ],
+  "author": "Niap",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "sharp": "^0.25.2",
+    "socket.io": "^2.3.0",
+		"node-freerdp2": "https://github.com/Niap/node-freerdp2"
+  }
+}
