@@ -17,57 +17,30 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-var freerdp = require('node-freerdp2');
-var sharp = require('sharp');
-
+var sessions = require('./sessions');
 /**
  * Create proxy between rdp layer and socket io
  * @param server {http(s).Server} http server
  */
+
+
 module.exports = function (server) {
 	var io = require('socket.io')(server);
 	io.on('connection', function(client) {
 		var rdpClient = null;
-		client.on('infos', function (infos) {
+		client.on('start', function (sessionId,width,height) {
 			if (rdpClient) {
 				// clean older connection
 				rdpClient.close();
 			};
 			
-			rdpClient = new freerdp.Session({
-				host: infos.ip,
-				domain : infos.domain, 
-				username : infos.username,
-				password : infos.password,
-				port: 3389, // optional
-				width: infos.screen.width, // optional
-				height: infos.screen.height, // optional
-				app:infos.app,
-				certIgnore: true
-			}).on('connect', function () {
-				client.emit('rdp-connect');
-			}).on('bitmap',function(bitmap) {
-				sharp(bitmap.buffer,{
-					raw: {
-					  width: bitmap.w,
-					  height: bitmap.h,
-					  channels: 4,
-					},
-				}).removeAlpha().png({
-					compressionLevel : 3
-				}).toBuffer().then( data => {
-					bitmap.buffer = "data:image/png;base64,"+new Buffer(data.buffer).toString('base64');
-					client.emit('rdp-bitmap', bitmap);
-				}).catch( err => { 
-					console.log(err)
-				});
-			}).on('close', function() {
-				client.emit('rdp-close');
-			}).on('error', function(err) {
-				client.emit('rdp-error', err);
-			}).connect();
-
-
+			if(sessions.isRdpConnected(sessionId)){
+				rdpClient = sessions.reconnectSession(sessionId,client);
+			}else{
+				rdpClient = sessions.startSession(sessionId,width,height,client);
+			}
+			
+			
 		}).on('mouse', function (x, y, button, isPressed) {
 			if (!rdpClient)  return;
 			rdpClient.sendPointerEvent(x, y, button, isPressed);
@@ -83,7 +56,7 @@ module.exports = function (server) {
 		}).on('disconnect', function() {
 			if(!rdpClient) return;
 
-			rdpClient.close();
+			//rdpClient.close();
 		});
 	});
 }

@@ -81,12 +81,13 @@
 			
 			return this;
 		},
-        connect : function (ip, domain, username, password,app,next) {
+        connect : function (sessionId,next) {
             var parts = document.location.pathname.split('/')
 		      , base = parts.slice(0, parts.length - 1).join('/') + '/'
               , path = base + 'socket.io';
             const self = this;
-            this.socket = io(window.location.protocol + "//" + window.location.host, { "path": path }).on('rdp-connect', function() {
+            this.socket = io(window.location.protocol + "//" + window.location.host).on('rdp-connect', function() {
+				debugger;
 				self.install();
 			}).on('rdp-bitmap', function(bitmap) {
 				self.player.update(bitmap);
@@ -96,18 +97,7 @@
 				next(err);
             });
             
-            this.socket.emit('infos', {
-				ip : ip, 
-				port : 3389, 
-				screen : { 
-					width : this.canvas.width, 
-					height : this.canvas.height 
-				}, 
-				domain : domain, 
-				username : username, 
-				password : password, 
-				app : app
-			});
+            this.socket.emit('start', sessionId,this.canvas.width, this.canvas.height );
         }
     }
 

@@ -19,12 +19,40 @@
 
 var express = require('express');
 var http = require('http');
+var sessions = require('./sessions');
+var apps = require('./apps');
 
 var app = express();
+app.set("engine","ejs");
+app.set("views","server/tpl");
 app.use(express.static(__dirname + '/../client'))
+//tpl
 app.get('/', function(req, res) {
-	res.sendFile(__dirname + '/../client/index.html');
+	res.render("index.ejs")
 });
+app.get('/session/:sessionId', function(req, res) {
+	var sessionId = req.params.sessionId;
+	if(sessions.getSession(sessionId) == null){
+		res.send("no session");
+	}
+	res.render("session.ejs",{sessionId:sessionId})
+});
+
+//api
+app.get('/applist',function(req,res){
+	res.json({
+		error:0,
+		data:apps.getAll()
+	})
+})
+
+app.get('/startSession/:appId',function(req,res){
+	var app = apps.getOne(req.params.appId);
+	var sessionId = sessions.genSessionId();
+	sessions.setSessionApp(sessionId,app);
+	res.send(sessionId);
+})
+
 var server = http.createServer(app).listen(process.env.PORT || 9250);
 
 require('./mstsc')(server);
