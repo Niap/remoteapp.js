@@ -9,6 +9,8 @@
   </head>
 
   <body>
-    <canvas id="myCanvas" ></canvas>
+    <% apps.forEach(function(app){ %>
+      <a target="__blank" href="/startSession/<%=app.id%>"><%=app.name%></a>
+    <% })%>
   </body>
 </html>

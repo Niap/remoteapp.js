@@ -19,7 +19,11 @@ var getSession = function(sessionId){
 
 var genSessionId = function(){
     var sessionId = uuid.v4();
-    sessions[sessionId] ={};
+    sessions[sessionId] ={
+        app:null,
+        rdpClient:null,
+        socketClient:null,
+    };
     return sessionId;
 }
 
@@ -47,7 +51,7 @@ var startSession = function(sessionId,width,height,client){
         port: 3389, // optional
         width: width, // optional
         height:height, // optional
-        //app:session['app']['cmd'],
+        app:sessions[sessionId]['app']['cmd'],
         certIgnore: true,
     })
     sessions[sessionId]['rdpClient'] = rdpClient;

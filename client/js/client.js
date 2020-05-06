@@ -87,7 +87,6 @@
               , path = base + 'socket.io';
             const self = this;
             this.socket = io(window.location.protocol + "//" + window.location.host).on('rdp-connect', function() {
-				debugger;
 				self.install();
 			}).on('rdp-bitmap', function(bitmap) {
 				self.player.update(bitmap);

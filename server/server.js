@@ -28,12 +28,13 @@ app.set("views","server/tpl");
 app.use(express.static(__dirname + '/../client'))
 //tpl
 app.get('/', function(req, res) {
-	res.render("index.ejs")
+	res.render("index.ejs",{apps:apps.getAll()})
 });
 app.get('/session/:sessionId', function(req, res) {
 	var sessionId = req.params.sessionId;
 	if(sessions.getSession(sessionId) == null){
 		res.send("no session");
+		return;
 	}
 	res.render("session.ejs",{sessionId:sessionId})
 });
@@ -48,9 +49,13 @@ app.get('/applist',function(req,res){
 
 app.get('/startSession/:appId',function(req,res){
 	var app = apps.getOne(req.params.appId);
+	if(app ==null){
+		res.send("no app");
+		return;
+	}
 	var sessionId = sessions.genSessionId();
 	sessions.setSessionApp(sessionId,app);
-	res.send(sessionId);
+	res.redirect(`/session/${sessionId}`);
 })
 
 var server = http.createServer(app).listen(process.env.PORT || 9250);

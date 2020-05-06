@@ -1,16 +1,22 @@
-var apps = {
-    "1":{
-            name:"calc",
-            cmd:"calc",
-            icon:"?"
+var apps = [
+    {
+        id:"1",
+        name:"notepad",
+        cmd:"notepad",
+        icon:"?"
     }
-}
+]
 
 var getAll = function(){
     return apps;
 }
 var getOne = function(appId){
-    return apps[appId];
+    for(var i=0;i<apps.length;i++){
+        if(appId == apps[i]['id']){
+            return apps[i];
+        }
+    }
+    return null;
 }
 
 module.exports ={
