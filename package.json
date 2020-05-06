@@ -1,5 +1,5 @@
 {
-  "name": "remote-app",
+  "name": "remoteapp.js",
   "version": "1.0.0",
   "description": "rdp remote-app useing node-freerdp2",
   "main": "index.js",
@@ -7,7 +7,7 @@
     "start": "node server/server.js"
   },
   "keywords": [
-    "remote-app",
+    "remoteapp",
     "node-freerdp2",
     "rdp",
     "mstsc"

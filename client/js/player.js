@@ -1,8 +1,8 @@
 (function() {
     function Player(canvas) {
         this.canvas = canvas;
-        canvas.width = window.innerWidth;
-		canvas.height = window.innerHeight;
+        canvas.width = document.body.clientWidth;
+		canvas.height = document.body.clientHeight;
 		this.ctx = canvas.getContext("2d");
     }
     
