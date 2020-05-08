@@ -53,8 +53,7 @@ app.get('/startSession/:appId',function(req,res){
 		res.send("no app");
 		return;
 	}
-	var sessionId = sessions.genSessionId();
-	sessions.setSessionApp(sessionId,app);
+	var sessionId = sessions.newSession(app);
 	res.redirect(`/session/${sessionId}`);
 })
 

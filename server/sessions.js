@@ -12,43 +12,44 @@ var sessions = {};
 var uuid = require('uuid');
 var freerdp = require('node-freerdp2');
 var sharp = require('sharp');
+var config = require('./config');
 
 var getSession = function(sessionId){
     return sessions[sessionId];
 }
 
-var genSessionId = function(){
+var newSession = function(setsionApp){
     var sessionId = uuid.v4();
     sessions[sessionId] ={
-        app:null,
+        app:setsionApp,
         rdpClient:null,
         socketClient:null,
     };
     return sessionId;
 }
 
-var setSessionApp = function(sessionId,session){
-    sessions[sessionId]['app'] = session;
+var deleteSession = function(sessionId){
+    delete(sessions[sessionId]);
 }
 
-var isRdpConnected = function(sessionId){
+var isRdpSessionConnected = function(sessionId){
     return sessions[sessionId]['rdpClient'] != null;
 }
 
-var reconnectSession = function(sessionId,client){
+var reconnectRdpSession = function(sessionId,client){
     sessions[sessionId]['socketClient'] = client;
     client.emit('rdp-connect');
     return sessions[sessionId]['rdpClient'];
 }
 
-var startSession = function(sessionId,width,height,client){
+var startRdpSession = function(sessionId,width,height,client){
 
     var rdpClient = new freerdp.Session({
-        host: "192.168.13.89",
-        domain : null, 
-        username : "niap",
-        password : "niap",
-        port: 3389, // optional
+        host: config.server.host,
+        domain : config.server.domain, 
+        username : config.server.username,
+        password : config.server.password,
+        port: config.server.port, // optional
         width: width, // optional
         height:height, // optional
         app:sessions[sessionId]['app']['cmd'],
@@ -72,21 +73,26 @@ var startSession = function(sessionId,width,height,client){
 			bitmap.buffer = "data:image/png;base64,"+new Buffer(data.buffer).toString('base64');
 			sessions[sessionId]['socketClient'].emit('rdp-bitmap', bitmap);
 		}).catch( err => { 
-			console.log(err)
+			console.log("sharp error"+err)
 		});
 	}).on('close', function() {
-		sessions[sessionId]['socketClient'].emit('rdp-close');
+        var socket = sessions[sessionId]['socketClient'];
+        socket.emit('rdp-close');
+        socket.disconnect();
+        deleteSession(sessionId);
 	}).on('error', function(err) {
-		sessions[sessionId]['socketClient'].emit('rdp-error', err);
+        var socket = sessions[sessionId]['socketClient'];
+        socket.emit('rdp-error', err);
+        socket.disconnect();
+        deleteSession(sessionId);
 	}).connect();
 	return rdpClient;
 }
 
 module.exports ={
     getSession,
-    genSessionId,
-    setSessionApp,
-    startSession,
-    reconnectSession,
-    isRdpConnected
+    newSession,
+    isRdpSessionConnected,
+    reconnectRdpSession,
+    startRdpSession
 }

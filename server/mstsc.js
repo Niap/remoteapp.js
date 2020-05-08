@@ -34,10 +34,10 @@ module.exports = function (server) {
 				rdpClient.close();
 			};
 			
-			if(sessions.isRdpConnected(sessionId)){
-				rdpClient = sessions.reconnectSession(sessionId,client);
+			if(sessions.isRdpSessionConnected(sessionId)){
+				rdpClient = sessions.reconnectRdpSession(sessionId,client);
 			}else{
-				rdpClient = sessions.startSession(sessionId,width,height,client);
+				rdpClient = sessions.startRdpSession(sessionId,width,height,client);
 			}
 			
 			
