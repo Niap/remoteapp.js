@@ -64,16 +64,37 @@
 			// bind keyboard event
 			window.addEventListener('keydown', function (e) {
 				if (!self.socket) return;
+				if(e.key == "v" && e.ctrlKey){
+					navigator.clipboard.readText().then(function(clipboardData){
+						if(clipboardData != window.lastClipboardData){
+							window.lastClipboardData = clipboardData
+							window.preventVkey = true
+							self.socket.emit('paste', clipboardData, function(){
+								self.socket.emit('scancode', 0x001D, true);
+								self.socket.emit('scancode', 0x002F, true);
+								self.socket.emit('scancode', 0x002F, false);
+								self.socket.emit('scancode', 0x001D, false);
+							});
+						}else{
+							self.socket.emit('scancode', RemoteApp.scancode(e), true);
+						}
+					},function(){
+						alert("读取剪切板失败");	
+					});
+				}else{
+					self.socket.emit('scancode', RemoteApp.scancode(e), true);
+				}
 				
-				self.socket.emit('scancode', RemoteApp.scancode(e), true);
-
 				e.preventDefault();
 				return false;
 			});
 			window.addEventListener('keyup', function (e) {
 				if (!self.socket) return;
-				
-				self.socket.emit('scancode', RemoteApp.scancode(e), false);
+				if(window.preventVkey){
+					window.preventVkey = false;
+				}else{
+					self.socket.emit('scancode', RemoteApp.scancode(e), false);
+				}
 				
 				e.preventDefault();
 				return false;

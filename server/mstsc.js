@@ -49,10 +49,13 @@ module.exports = function (server) {
 				return;
 			}
 			rdpClient.sendWheelEvent(x, y, step, isNegative, isHorizontal);
+		}).on('paste', function (clipboardData,callbak) {
+			rdpClient.sendClipboard(clipboardData);
+			callbak();
 		}).on('scancode', function (code, isPressed) {
 			if (!rdpClient) return;
+				rdpClient.sendKeyEventScancode(code, isPressed);
 
-			rdpClient.sendKeyEventScancode(code, isPressed);
 		}).on('disconnect', function() {
 			if(!rdpClient) return;
 
