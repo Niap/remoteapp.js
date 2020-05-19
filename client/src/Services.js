@@ -24,7 +24,7 @@ export async function RequestSaveAppInfo(appid,data) {
   });
 }
 export async function RequestDelAppInfo(appid,data) {
-  return request(`/api/appedel/${appid}`, {
+  return request(`/api/appdel/${appid}`, {
     method: 'GET',
     data
   });

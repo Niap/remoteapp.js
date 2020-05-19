@@ -1,7 +1,7 @@
-import { Layout,Form,Input, Card,Button,Upload,message } from 'antd';
+import { Layout,Form,Input, Card,Button,Upload,message,Space } from 'antd';
 import React from 'react';
 import { LeftOutlined } from '@ant-design/icons';
-import {RequestAppInfo,RequestSaveAppInfo,RequestAddAppInfo} from "../Services"
+import {RequestAppInfo,RequestSaveAppInfo,RequestAddAppInfo,RequestDelAppInfo} from "../Services"
 import {api,getImagePath} from "../Request"
 
 const { Content,Header } = Layout;
@@ -29,12 +29,14 @@ class AppForm extends React.Component{
     if(appid === "add"){
       RequestAddAppInfo(values).then(()=>{
         message.success("保存成功");
+        this.props.history.replace("/#/applist")
       },()=>{
         message.error("保存失败");
       })
     }else{
       RequestSaveAppInfo(appid,values).then(()=>{
         message.success("保存成功");
+        this.props.history.replace("/#/applist")
       },()=>{
         message.error("保存失败");
       })
@@ -45,9 +47,8 @@ class AppForm extends React.Component{
 
   componentDidMount(){
     let appid = this.props.match.params.appid;
-    if(appid === "add"){
+    if(appid !== "add"){
      
-    }else{
       RequestAppInfo(appid).then((response)=>{
         this.setState({
           iconUrl:response.data.data.app.icon
@@ -77,7 +78,7 @@ class AppForm extends React.Component{
     return (
       <Layout style={{background:"transparent"}}>
         <Header style={{ position: 'fixed', zIndex: 1, width: '100%',background:"#fff"}}>
-         <a href="/applist" style={{color:"#0066ff",fontSize:20}} ><LeftOutlined />返回应用页</a>
+         <a href="#/applist" style={{color:"#0066ff",fontSize:20}} ><LeftOutlined />返回应用页</a>
         </Header>
         <Content style={{ padding: '0 8%', marginTop: 100 }}>
             <Card title="修改应用">
@@ -118,9 +119,21 @@ class AppForm extends React.Component{
                     <Form.Item 
                       {...tailLayout}
                     >
-                      <Button type="primary" htmlType="submit">
+                      <Space><Button type="primary" htmlType="submit">
                         保存
                       </Button>
+                      <Button 
+                        disabled={ this.props.match.params.appid =="add"}
+                        onClick={()=>{
+                        RequestDelAppInfo(this.props.match.params.appid).then(()=>{
+                          message.success("删除成功");
+                          this.props.history.replace("/#/applist")
+                        },()=>{
+                          message.error("删除失败")
+                        })
+                      }} type="danger" >
+                        删除
+                      </Button></Space>
                     </Form.Item>
                 </Form>
             </Card>

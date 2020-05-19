@@ -32,7 +32,7 @@ class AppItem extends React.Component{
       >
         <img onClick={this.props.onClick} alt="图片" style={{width:120,height:120}} src={this.props.icon} />
         <p style={{marginTop:10,fontSize:16,color:"#7f7f7f",textAlign:"center"}}>{this.props.name}</p>
-        {this.state.showEdit&&!this.props.noedit?<a href={`/app/${this.props.appId}`} style={{
+        {this.state.showEdit&&!this.props.noedit?<a href={`#/app/${this.props.appId}`} style={{
           color:"#666",
           background:"rgba(255,255,255,0.8)",
           padding:0,
@@ -57,15 +57,15 @@ class AppList extends React.Component{
   }
 
   goToDocument=()=>{
-    window.location.href = "/document/%2F";
+    window.location.href = "#/document/%2F";
   }
   goToAdd=()=>{
-    window.location.href = "/app/add";
+    window.location.href = "#/app/add";
   }
 
   openApp = (appId)=>{
     RequestStartSession(appId).then((response)=>{
-      window.location.href = "/session/"+response.data.data.sessionId;
+      window.location.href = "#/session/"+response.data.data.sessionId;
     });
   }
 
@@ -82,13 +82,7 @@ class AppList extends React.Component{
     return (
       <Layout style={{background:"transparent"}}>
         <Header style={{ position: 'fixed', zIndex: 1, width: '100%',background:"#fff"}}>
-          <a href="/applist">LOGO</a>
-          <Button 
-          onClick={()=>{
-            window.localStorage.removeItem("token");
-            window.location.href = '/login';
-          }}
-          style={{position:"absolute",right:50,top:20}} type="link">登出</Button>
+          <a href="#/applist">LOGO</a>
         </Header>
         <Content style={{ padding: '0 8%', marginTop: 100 }}>
           <div style={{ padding: 24, minHeight: 380 }}>

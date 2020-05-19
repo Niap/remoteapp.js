@@ -19,6 +19,18 @@ var addOne = function(app){
     fs.writeFileSync(__dirname+"\\app.json",appStr,'utf-8');
 }
 
+var delOne = function(appId){
+    var apps = getAll();
+    var newApps = [];
+    for(var i=0;i<apps.length;i++){
+        if(appId != apps[i]['id']){
+            newApps.push(apps[i])
+        }
+    }
+    var appStr = JSON.stringify(newApps);
+    fs.writeFileSync(__dirname+"\\app.json",appStr,'utf-8');
+}
+
 var getOne = function(appId){
     var apps = getAll();
     for(var i=0;i<apps.length;i++){
@@ -45,5 +57,6 @@ module.exports ={
     getAll,
     getOne,
     saveOne,
-    addOne
+    addOne,
+    delOne
 }

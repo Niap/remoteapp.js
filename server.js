@@ -51,6 +51,20 @@ app.post('/api/upload/icon',upload.single('file'),function(req,res){
 	});
 })
 
+
+app.get('/api/appdel/:appId',function(req,res){
+	var app = apps.getOne(req.params.appId);
+	if(app ==null){
+		res.send("no app");
+		return;
+	}
+	apps.delOne(req.params.appId);
+	res.json({
+		error:0,
+		data:{
+		}
+	})
+})
 app.post('/api/appadd',function(req,res){
 	var app = req.body;
 	apps.addOne(app);

@@ -3,7 +3,7 @@ import AppList from "./pages/AppList"
 import Document from "./pages/Document"
 import Session from "./pages/Session"
 import AppForm  from "./pages/AppForm"
-import { BrowserRouter as Router, Route,Switch,Redirect } from 'react-router-dom'
+import { HashRouter as Router, Route,Switch,Redirect } from 'react-router-dom'
 
 function App() {
   return (
