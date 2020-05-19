@@ -12,7 +12,8 @@ var sessions = {};
 var uuid = require('uuid');
 var freerdp = require('node-freerdp2');
 var sharp = require('sharp');
-var config = require('./config');
+var fs = require("fs");
+var server  = JSON.parse(fs.readFileSync(__dirname+"\\server.json",'utf-8'));
 
 var getSession = function(sessionId){
     return sessions[sessionId];
@@ -45,11 +46,11 @@ var reconnectRdpSession = function(sessionId,client){
 var startRdpSession = function(sessionId,width,height,client){
 
     var rdpClient = new freerdp.Session({
-        host: config.server.host,
-        domain : config.server.domain, 
-        username : config.server.username,
-        password : config.server.password,
-        port: config.server.port, // optional
+        host: server.host,
+        domain : server.domain, 
+        username : server.username,
+        password : server.password,
+        port: server.port, // optional
         width: width, // optional
         height:height, // optional
         app:sessions[sessionId]['app']['cmd'],

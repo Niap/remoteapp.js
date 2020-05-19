@@ -1,0 +1,12 @@
+@import '~antd/dist/antd.css';
+
+html,body{
+    height:100%;
+    width: 100%;
+}
+
+#root{
+    height:100%;
+    width: 100%;
+    background: #E5EDF0;
+}

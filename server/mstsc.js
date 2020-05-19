@@ -39,8 +39,7 @@ module.exports = function (server) {
 			}else{
 				rdpClient = sessions.startRdpSession(sessionId,width,height,client);
 			}
-			
-			
+
 		}).on('mouse', function (x, y, button, isPressed) {
 			if (!rdpClient)  return;
 			rdpClient.sendPointerEvent(x, y, button, isPressed);
