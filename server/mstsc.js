@@ -57,8 +57,7 @@ module.exports = function (server) {
 
 		}).on('disconnect', function() {
 			if(!rdpClient) return;
-
-			//rdpClient.close();
+			rdpClient.close();
 		});
 	});
 }

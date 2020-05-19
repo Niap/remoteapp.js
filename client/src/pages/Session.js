@@ -47,7 +47,7 @@ class Session extends React.Component{
         });
         
         // bind keyboard event
-        this.canvas.addEventListener('keydown',  (e)=>{
+        window.addEventListener('keydown',  (e)=>{
             if (!this.socket) return;
             if(e.key === "v" && e.ctrlKey){
                 navigator.clipboard.readText().then(function(clipboardData){
@@ -72,7 +72,7 @@ class Session extends React.Component{
             e.preventDefault();
             return false;
         });
-        this.canvas.addEventListener('keyup',  (e)=>{
+        window.addEventListener('keyup',  (e)=>{
             if (!this.socket) return;
             if(window.preventVkey){
                 window.preventVkey = false;
@@ -87,7 +87,7 @@ class Session extends React.Component{
 
 
     componentDidMount(){
-        this.socket = io("http://localhost:9250/").on('rdp-connect', ()=>{
+        this.socket = io(window.location.protocol + "//" + window.location.host).on('rdp-connect', ()=>{
             this.bind();
         }).on('rdp-bitmap', (bitmap)=>{
             var image = new Image();

@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-export const api = "http://localhost:9250/";
+export const api = "";
 
 export function getImagePath(image){
     return api+'uploads/'+image;
