@@ -1,9 +1,19 @@
 import React from 'react';
+import {Spin,Result,message} from 'antd';
 import io from "socket.io-client";
 import {MouseMap,KeyMap} from "../KeyMaps";
 
 
 class Session extends React.Component{
+
+    constructor(props) {
+        super(props);
+        this.state = {
+          ready:false,
+          result:false,
+          resultText:""
+        };
+      }
 
     bind=()=>{
         // bind mouse move event
@@ -64,7 +74,7 @@ class Session extends React.Component{
                         this.socket.emit('scancode', KeyMap[e.code], true);
                     }
                 },function(){
-                    alert("读取剪切板失败");	
+                    message.warning("读取剪切板失败");	
                 });
             }else{
                 this.socket.emit('scancode', KeyMap[e.code], true);
@@ -84,10 +94,8 @@ class Session extends React.Component{
         });
     }
 
-
-
     componentDidMount(){
-        this.socket = io(window.location.protocol + "//" + window.location.host).on('rdp-connect', ()=>{
+        this.socket = io("http://localhost:9250/").on('rdp-connect', ()=>{
             this.bind();
         }).on('rdp-bitmap', (bitmap)=>{
             var image = new Image();
@@ -95,10 +103,19 @@ class Session extends React.Component{
 			image.onload = ()=>{
 				this.ctx.drawImage(image, bitmap.x, bitmap.y);
 			}
-        }).on('rdp-close', function() {
+        }).on('rdp-close', (data)=>{
             
-        }).on('rdp-error', function (err) {
-            
+            this.setState({
+                ready:true,
+                result:true,
+                resultText:data.msg
+            })
+        }).on('rdp-error',  (data)=>{
+            this.setState({
+                ready:true,
+                result:true,
+                resultText:data.msg
+            })
         });
         this.sessionId = this.props.match.params.sessionId;
         this.canvas = this.refs.player;
@@ -111,9 +128,13 @@ class Session extends React.Component{
     render(){
         return (
             <div>
-                <canvas ref="player">
-
-                </canvas>
+                {this.state.result?<Result
+                    style={{paddingTop:240}}
+                    status="warning"
+                    title={this.state.resultText}
+                />:null}
+                {this.state.ready?null:<Spin style={{position:"absolute",left:"50%",top:"50%"}} />}
+                {!this.state.result?<canvas ref="player"></canvas>:null}
             </div>
         );
     }

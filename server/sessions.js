@@ -16,6 +16,9 @@ var fs = require("fs");
 var server  = JSON.parse(fs.readFileSync(__dirname+"\\server.json",'utf-8'));
 
 var getSession = function(sessionId){
+    if(!sessions.hasOwnProperty(sessionId)){
+        return null;
+    }
     return sessions[sessionId];
 }
 
@@ -34,11 +37,17 @@ var deleteSession = function(sessionId){
 }
 
 var isRdpSessionConnected = function(sessionId){
-    return sessions[sessionId]['rdpClient'] != null;
+    let session = getSession(sessionId);
+    if(session == null)
+        return false;
+    return session['rdpClient'] != null;
 }
 
 var reconnectRdpSession = function(sessionId,client){
-    sessions[sessionId]['socketClient'] = client;
+    let session = getSession(sessionId);
+    if(session == null)
+        return null;
+    session['socketClient'] = client;
     client.emit('rdp-connect');
     return sessions[sessionId]['rdpClient'];
 }
@@ -76,9 +85,9 @@ var startRdpSession = function(sessionId,width,height,client){
 		}).catch( err => { 
 			console.log("sharp error"+err)
 		});
-	}).on('close', function() {
+	}).on('close', function(msg) {
         var socket = sessions[sessionId]['socketClient'];
-        socket.emit('rdp-close');
+        socket.emit('rdp-close',msg);
         socket.disconnect();
         deleteSession(sessionId);
 	}).on('error', function(err) {

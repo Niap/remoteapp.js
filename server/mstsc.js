@@ -33,13 +33,19 @@ module.exports = function (server) {
 				// clean older connection
 				rdpClient.close();
 			};
-			
-			if(sessions.isRdpSessionConnected(sessionId)){
-				rdpClient = sessions.reconnectRdpSession(sessionId,client);
-			}else{
-				rdpClient = sessions.startRdpSession(sessionId,width,height,client);
-			}
 
+			if(!sessions.getSession(sessionId)){
+				client.emit('rdp-error',{msg:"session not exists"})
+				client.close();
+			}else{
+				if(sessions.isRdpSessionConnected(sessionId)){
+					rdpClient = sessions.reconnectRdpSession(sessionId,client);
+				}else{
+					rdpClient = sessions.startRdpSession(sessionId,width,height,client);
+				}
+			}
+			
+			
 		}).on('mouse', function (x, y, button, isPressed) {
 			if (!rdpClient)  return;
 			rdpClient.sendPointerEvent(x, y, button, isPressed);
@@ -57,7 +63,7 @@ module.exports = function (server) {
 
 		}).on('disconnect', function() {
 			if(!rdpClient) return;
-			rdpClient.close();
+				rdpClient.close();
 		});
 	});
 }
