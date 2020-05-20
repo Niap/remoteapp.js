@@ -13,7 +13,7 @@ var uuid = require('uuid');
 var freerdp = require('node-freerdp2');
 var sharp = require('sharp');
 var fs = require("fs");
-var server  = JSON.parse(fs.readFileSync(__dirname+"\\server.json",'utf-8'));
+const dirname = process.cwd()+"\\server\\";
 
 var getSession = function(sessionId){
     if(!sessions.hasOwnProperty(sessionId)){
@@ -53,7 +53,7 @@ var reconnectRdpSession = function(sessionId,client){
 }
 
 var startRdpSession = function(sessionId,width,height,client,file_path){
-
+    var server  = JSON.parse(fs.readFileSync(dirname+"\\server.json",'utf-8'));
     var rdpClient = new freerdp.Session({
         host: server.host,
         domain : server.domain, 

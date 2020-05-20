@@ -97,6 +97,9 @@ class Session extends React.Component{
     componentDidMount(){
         this.socket = io(window.location.protocol + "//" + window.location.host).on('rdp-connect', ()=>{
             this.bind();
+            this.setState({
+                ready:true
+            })
         }).on('rdp-bitmap', (bitmap)=>{
             var image = new Image();
 			image.src = bitmap.buffer;
@@ -104,7 +107,6 @@ class Session extends React.Component{
 				this.ctx.drawImage(image, bitmap.x, bitmap.y);
 			}
         }).on('rdp-close', (data)=>{
-            
             this.setState({
                 ready:true,
                 result:true,
@@ -127,7 +129,7 @@ class Session extends React.Component{
 
     render(){
         return (
-            <div>
+            <div style={{width:"100%",height:"100%"}}>
                 {this.state.result?<Result
                     style={{paddingTop:240}}
                     status="warning"

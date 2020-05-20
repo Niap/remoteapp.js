@@ -1,7 +1,9 @@
 var fs = require("fs");
 
+const dirname = process.cwd()+"\\server\\";
+
 var getAll = function(){
-    var apps  = JSON.parse(fs.readFileSync(__dirname+"\\app.json",'utf-8'));
+    var apps  = JSON.parse(fs.readFileSync(dirname+"\\app.json",'utf-8'));
     return apps;
 }
 
@@ -16,7 +18,7 @@ var addOne = function(app){
     app["id"] = maxId+1;
     apps.push(app);
     var appStr = JSON.stringify(apps);
-    fs.writeFileSync(__dirname+"\\app.json",appStr,'utf-8');
+    fs.writeFileSync(dirname+"\\app.json",appStr,'utf-8');
 }
 
 var delOne = function(appId){
@@ -28,7 +30,7 @@ var delOne = function(appId){
         }
     }
     var appStr = JSON.stringify(newApps);
-    fs.writeFileSync(__dirname+"\\app.json",appStr,'utf-8');
+    fs.writeFileSync(dirname+"\\app.json",appStr,'utf-8');
 }
 
 var getOne = function(appId){
@@ -50,7 +52,7 @@ var saveOne = function(appId,app){
         }
     }
     var appStr = JSON.stringify(apps);
-    fs.writeFileSync(__dirname+"\\app.json",appStr,'utf-8');
+    fs.writeFileSync(dirname+"\\app.json",appStr,'utf-8');
 }
 
 module.exports ={

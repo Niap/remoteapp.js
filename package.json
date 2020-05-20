@@ -4,7 +4,14 @@
   "description": "rdp remote-app useing node-freerdp2",
   "main": "index.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "pkg": "pkg -t win ."
+  },
+  "bin": "server.js",
+  "pkg": {
+    "assets": [
+      "client/build/**/*"
+    ]
   },
   "keywords": [
     "remoteapp",

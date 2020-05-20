@@ -17,13 +17,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 var express = require('express');
 var http = require('http');
 var sessions = require('./server/sessions');
 var apps = require('./server/apps');
 var path = require('path');
 var multer  = require('multer');
-const icon_path = path.join(__dirname, '/uploads/icon');
+
+const dirname = process.cwd();
+const icon_path = path.join(dirname, '/uploads/icon');
 var icon_storage = multer.diskStorage({
 	destination: function (req, file, cb) {
 		cb(null, icon_path)
@@ -36,7 +39,7 @@ var icon_storage = multer.diskStorage({
 })
 var icon_uploader = multer({ storage:icon_storage});
 
-const file_path = path.join(__dirname, '/uploads/files');
+const file_path = path.join(dirname, '/uploads/files');
 var file_storage = multer.diskStorage({
 	destination: function (req, file, cb) {
 		cb(null, file_path)

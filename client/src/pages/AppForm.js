@@ -97,7 +97,6 @@ class AppForm extends React.Component{
                     <Form.Item
                         label="别名"
                         name="cmd"
-                        rules={[{ required: true, message: '请输入别名' }]}
                     >
                         <Input />
                     </Form.Item>
