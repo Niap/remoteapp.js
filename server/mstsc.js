@@ -24,7 +24,7 @@ var sessions = require('./sessions');
  */
 
 
-module.exports = function (server) {
+module.exports = function (server,file_path) {
 	var io = require('socket.io')(server);
 	io.on('connection', function(client) {
 		var rdpClient = null;
@@ -41,7 +41,7 @@ module.exports = function (server) {
 				if(sessions.isRdpSessionConnected(sessionId)){
 					rdpClient = sessions.reconnectRdpSession(sessionId,client);
 				}else{
-					rdpClient = sessions.startRdpSession(sessionId,width,height,client);
+					rdpClient = sessions.startRdpSession(sessionId,width,height,client,file_path);
 				}
 			}
 			

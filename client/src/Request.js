@@ -1,9 +1,12 @@
 import axios from 'axios'
 
-export const api = "";
+export const api = "http://localhost:9250/";
 
 export function getImagePath(image){
-    return api+'uploads/'+image;
+    return api+'icon/'+image;
+}
+export function getFilesPath(image){
+    return api+'files/'+image;
 }
 
 const service = axios.create({

@@ -52,7 +52,7 @@ var reconnectRdpSession = function(sessionId,client){
     return sessions[sessionId]['rdpClient'];
 }
 
-var startRdpSession = function(sessionId,width,height,client){
+var startRdpSession = function(sessionId,width,height,client,file_path){
 
     var rdpClient = new freerdp.Session({
         host: server.host,
@@ -64,6 +64,7 @@ var startRdpSession = function(sessionId,width,height,client){
         height:height, // optional
         app:sessions[sessionId]['app']['cmd'],
         certIgnore: true,
+        drive:file_path
     })
     sessions[sessionId]['rdpClient'] = rdpClient;
     sessions[sessionId]['socketClient'] = client;

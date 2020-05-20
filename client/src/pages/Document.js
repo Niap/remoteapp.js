@@ -1,9 +1,9 @@
 import { Layout,Table, Button, Space,Row,Col,Modal,Input,message,Upload } from 'antd';
 import React from 'react';
-import { LeftOutlined,FolderOutlined,FileOutlined } from '@ant-design/icons';
-import {RequestListPath,RequestNewFolder,RequestDelPath,RequestUpload} from "../Services";
+import { LeftOutlined,FileOutlined } from '@ant-design/icons';
+import {RequestListFile,RequestDelFile,RequestUploadFile} from "../Services";
 import moment from 'moment';
-
+import {getFilesPath} from "../Request"
 
 const { Content,Header } = Layout;
 
@@ -15,7 +15,7 @@ class Document extends React.Component{
           fileList: [],
           CreateFolderModalVisable:false,
           newFolderName:"",
-          currentPath:"%2F"
+          currentPath:""
         };
     }
 
@@ -28,7 +28,7 @@ class Document extends React.Component{
             let path = encodeURIComponent(`${this.state.currentPath}/${item}`);
             return (
                 <Space>
-                    {row.directory?<FolderOutlined style={{fontSize:25}} />:<FileOutlined  style={{fontSize:25}} />}
+                    <FileOutlined  style={{fontSize:25}} />
                     <a style={{color:"#333"}} href={`/document/${path}`}>{item}</a>
                 </Space>
             );
@@ -36,35 +36,46 @@ class Document extends React.Component{
         },
         {
           title: '文件大小',
-          dataIndex: 'contentLength',
+          dataIndex: 'size',
           width:150,
-          key: 'contentLength',
+          key: 'size',
           render:(item)=>{
-            return item==="-1"?"":item;
+            return item==="-1"?"":item+"字节";
           }
         },
         {
+            title: '创建时间',
+            width: 250,
+            dataIndex: 'ctime',
+            key: 'ctime',
+            render:(item)=>{
+             return moment(item).format('YYYY-MM-DD HH:mm:ss') 
+            }
+          },
+        {
           title: '修改时间',
           width: 250,
-          dataIndex: 'modified',
-          key: 'modified',
+          dataIndex: 'mtime',
+          key: 'mtime',
           render:(item)=>{
            return moment(item).format('YYYY-MM-DD HH:mm:ss') 
           }
         },
         {
             title: '操作',
-            width: 80,
+            width: 160,
             align:"center",
             render:(row)=>{
                 return (
                     <Space >
+                        <a href={getFilesPath(row.name)}>下载</a>
+
                         <Button onClick={()=>{
                             let delPath = this.state.currentPath+row.name;
                             if(row.directory){
                                 delPath += "/";
                             }
-                            RequestDelPath([delPath]).then(()=>{
+                            RequestDelFile([delPath]).then(()=>{
                                message.success("删除成功");
                                this.loadFileList(this.state.currentPath);
                             })
@@ -85,33 +96,19 @@ class Document extends React.Component{
         })
     }
     loadFileList(path){
-        RequestListPath(path).then((response)=>{
+        RequestListFile(path).then((response)=>{
             this.setState({
-                fileList:response.data.data
+                fileList:response.data.data.files
             })
         })
     }
-    handleCreateFolderModalOk = ()=>{
-        let parentPath = this.state.currentPath;
-        let path = this.state.newFolderName;
-        RequestNewFolder(path,parentPath).then((response)=>{
-            message.success('创建文件夹成功');
-            this.setState({
-                CreateFolderModalVisable:false
-            },()=>{
-                this.loadFileList(parentPath);
-            })
-        },()=>{
-
-        })
-    }
+   
     handleCreateFolderModalCancel =  ()=>{
         this.setState({
             CreateFolderModalVisable:false
         })
     }
     
-
     render(){
         let { fileList} = this.state;
         return (
@@ -125,7 +122,7 @@ class Document extends React.Component{
                             <Space>
                                 <Upload
                                     customRequest={(upload)=>{
-                                        RequestUpload(this.state.currentPath,upload.file.name,upload.file).then(()=>{
+                                        RequestUploadFile(upload.file).then(()=>{
                                             message.success("上传成功");
                                             this.loadFileList(this.state.currentPath);
                                         })
@@ -137,11 +134,6 @@ class Document extends React.Component{
                                         上传文件
                                     </Button>
                                 </Upload>
-                                <Button style={{width:150}} onClick={()=>{
-                                    this.setState({
-                                        CreateFolderModalVisable:true
-                                    })
-                                }} size='large' >创建文件夹</Button>
                             </Space>
                         </Col>
                     </Row>
@@ -161,20 +153,7 @@ class Document extends React.Component{
                         }}
                         dataSource={fileList}
                         columns={this.columns} />;
-                    <Modal
-                        title="创建文件夹"
-                        visible={this.state.CreateFolderModalVisable}
-                        onOk={()=>{
-                            this.handleCreateFolderModalOk();
-                        }}
-                        onCancel={this.handleCreateFolderModalCancel}
-                    >
-                        <Input onChange={(event)=>{
-                           this.setState({
-                                newFolderName:event.target.value
-                           }) 
-                        }} placeholder="请输入新建文件夹名称" />
-                    </Modal>
+                    
                 </Content>
             </Layout>
             

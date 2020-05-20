@@ -38,46 +38,27 @@ export async function RequestAddAppInfo(data) {
 }
 
 
-
-export async function RequestListPath(dir) {
-  return request(`/api/document/list?path=${dir}&dirOnly=false`,{
+export async function RequestListFile(dir) {
+  return request(`/api/filelist`,{
     method:"GET"
   })
 }
 
-export async function RequestNewFolder(dirName,parentPath) {
-  return request(`/api/document/create`,{
+export async function RequestDelFile(pathList) {
+  return request(`/api/file/delete`,{
     method:"POST",
-    data:{
-      dirName,
-      parentPath
-    }
+    data:pathList
   })
 }
 
-export async function RequestDelPath(pathList) {
-  return request(`/api/document/delete`,{
-    method:"POST",
-    data:{
-      pathList
-    }
-  })
-}
-
-export async function RequestUpload(parentPath,filename,file) {
+export async function RequestUploadFile(file) {
   var forms = new FormData()
   var headers = {'Content-Type':'multipart/form-data'};
   forms.append('file',file);
 
-  return request(`/api/document/upload`,{
+  return request(`/api/upload/file`,{
     method:"POST",
     headers:headers,
     data: forms
   })
 }
-
-
-
-
-
-

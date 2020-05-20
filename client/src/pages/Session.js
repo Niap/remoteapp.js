@@ -95,7 +95,7 @@ class Session extends React.Component{
     }
 
     componentDidMount(){
-        this.socket = io("http://localhost:9250/").on('rdp-connect', ()=>{
+        this.socket = io(window.location.protocol + "//" + window.location.host).on('rdp-connect', ()=>{
             this.bind();
         }).on('rdp-bitmap', (bitmap)=>{
             var image = new Image();
