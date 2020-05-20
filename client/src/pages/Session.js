@@ -1,5 +1,5 @@
 import React from 'react';
-import {Spin,Result,message} from 'antd';
+import {Spin,Result,message,Button} from 'antd';
 import io from "socket.io-client";
 import {MouseMap,KeyMap} from "../KeyMaps";
 
@@ -13,85 +13,104 @@ class Session extends React.Component{
           result:false,
           resultText:""
         };
-      }
+    }
 
+    handleMouseMove = (e)=>{
+        if (!this.socket) return;
+        this.socket.emit('mouse', e.clientX, e.clientY, 0, false);
+        e.preventDefault();
+        return false;
+    }
+    handleMouseDown = (e)=>{
+        if (!this.socket) return;
+        this.socket.emit('mouse', e.clientX, e.clientY , MouseMap[e.button], true);
+        e.preventDefault();
+        return false;
+    }
+    handleMouseUp = (e)=>{
+        if (!this.socket) return;
+        
+        this.socket.emit('mouse', e.clientX, e.clientY, MouseMap[e.button], false);
+        e.preventDefault();
+        return false;
+    }
+    handleContextMenu = (e)=>{
+        if (!this.socket) return;
+        
+        this.socket.emit('mouse', e.clientX, e.clientY , MouseMap[e.button], false);
+        e.preventDefault();
+        return false;
+    }
+    handleMouseWheel = (e)=>{
+        if (!this.socket) return;
+        
+        var isHorizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY);
+        var delta = isHorizontal?e.deltaX:e.deltaY;
+        var step = Math.round(Math.abs(delta) / 10);
+        
+        this.socket.emit('wheel', e.clientX, e.clientY , step, delta > 0, isHorizontal);
+        e.preventDefault();
+        return false;
+    }
+    handleKeyDown = (e)=>{
+        if (!this.socket) return;
+        if(e.key === "v" && e.ctrlKey){
+            navigator.clipboard.readText().then((clipboardData)=>{
+                if(clipboardData !== window.lastClipboardData){
+                    window.lastClipboardData = clipboardData
+                    window.preventVkey = true
+                    this.socket.emit('paste', clipboardData, ()=>{
+                        this.socket.emit('scancode', 0x001D, true);
+                        this.socket.emit('scancode', 0x002F, true);
+                        this.socket.emit('scancode', 0x002F, false);
+                        this.socket.emit('scancode', 0x001D, false);
+                    });
+                }else{
+                    this.socket.emit('scancode', KeyMap[e.code], true);
+                }
+            },function(){
+                message.warning("读取剪切板失败");	
+            });
+        }else{
+            this.socket.emit('scancode', KeyMap[e.code], true);
+        }
+        e.preventDefault();
+        return false;
+    }
+
+    handleKeyUp = (e)=>{
+        if (!this.socket) return;
+        if(window.preventVkey){
+            window.preventVkey = false;
+        }else{
+            this.socket.emit('scancode', KeyMap[e.code], false);
+        }
+        e.preventDefault();
+        return false;
+    }
+
+    unbind = ()=>{
+        this.canvas.removeEventListener('mousemove',this.handleMouseMove);
+        this.canvas.removeEventListener('mousedown',this.handleMouseDown);
+        this.canvas.removeEventListener('mouseup',this.handleMouseUp);
+        this.canvas.removeEventListener('contextmenu',this.handleContextMenu);
+        this.canvas.removeEventListener('mousewheel',this.handleMouseWheel);
+        window.removeEventListener("keydown",this.handleKeyDown);
+        window.removeEventListener("keyup",this.handleKeyUp);
+    }
     bind=()=>{
-        // bind mouse move event
-        this.canvas.addEventListener('mousemove',  (e)=>{
-            if (!this.socket) return;
-            this.socket.emit('mouse', e.clientX, e.clientY, 0, false);
-            e.preventDefault();
-            return false;
-        });
-        this.canvas.addEventListener('mousedown',  (e)=>{
-            if (!this.socket) return;
-            this.socket.emit('mouse', e.clientX, e.clientY , MouseMap[e.button], true);
-            e.preventDefault();
-            return false;
-        });
-        this.canvas.addEventListener('mouseup',  (e)=>{
-            if (!this.socket) return;
-            
-            this.socket.emit('mouse', e.clientX, e.clientY, MouseMap[e.button], false);
-            e.preventDefault();
-            return false;
-        });
-        this.canvas.addEventListener('contextmenu', (e)=>{
-            if (!this.socket) return;
-            
-            this.socket.emit('mouse', e.clientX, e.clientY , MouseMap[e.button], false);
-            e.preventDefault();
-            return false;
-        });
-        
-        this.canvas.addEventListener('mousewheel',  (e)=>{
-            if (!this.socket) return;
-            
-            var isHorizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY);
-            var delta = isHorizontal?e.deltaX:e.deltaY;
-            var step = Math.round(Math.abs(delta) / 10);
-            
-            this.socket.emit('wheel', e.clientX, e.clientY , step, delta > 0, isHorizontal);
-            e.preventDefault();
-            return false;
-        });
-        
-        // bind keyboard event
-        window.addEventListener('keydown',  (e)=>{
-            if (!this.socket) return;
-            if(e.key === "v" && e.ctrlKey){
-                navigator.clipboard.readText().then(function(clipboardData){
-                    if(clipboardData !== window.lastClipboardData){
-                        window.lastClipboardData = clipboardData
-                        window.preventVkey = true
-                        this.socket.emit('paste', clipboardData, function(){
-                            this.socket.emit('scancode', 0x001D, true);
-                            this.socket.emit('scancode', 0x002F, true);
-                            this.socket.emit('scancode', 0x002F, false);
-                            this.socket.emit('scancode', 0x001D, false);
-                        });
-                    }else{
-                        this.socket.emit('scancode', KeyMap[e.code], true);
-                    }
-                },function(){
-                    message.warning("读取剪切板失败");	
-                });
-            }else{
-                this.socket.emit('scancode', KeyMap[e.code], true);
-            }
-            e.preventDefault();
-            return false;
-        });
-        window.addEventListener('keyup',  (e)=>{
-            if (!this.socket) return;
-            if(window.preventVkey){
-                window.preventVkey = false;
-            }else{
-                this.socket.emit('scancode', KeyMap[e.code], false);
-            }
-            e.preventDefault();
-            return false;
-        });
+        this.canvas.addEventListener('mousemove', this.handleMouseMove );
+        this.canvas.addEventListener('mousedown',  this.handleMouseDown );
+        this.canvas.addEventListener('mouseup',  this.handleMouseUp );
+        this.canvas.addEventListener('contextmenu', this.handleContextMenu );
+        this.canvas.addEventListener('mousewheel',  this.handleMouseWheel );
+        window.addEventListener('keydown', this.handleKeyDown );
+        window.addEventListener('keyup', this.handleKeyUp );
+    }
+
+    componentWillUnmount(){
+        this.socket.emit('closerdp');
+        this.unbind();
     }
 
     componentDidMount(){
@@ -130,6 +149,7 @@ class Session extends React.Component{
     render(){
         return (
             <div style={{width:"100%",height:"100%"}}>
+                
                 {this.state.result?<Result
                     style={{paddingTop:240}}
                     status="warning"

@@ -36,7 +36,7 @@ module.exports = function (server,file_path) {
 
 			if(!sessions.getSession(sessionId)){
 				client.emit('rdp-error',{msg:"session not exists"})
-				client.close();
+				client.disconnect();
 			}else{
 				if(sessions.isRdpSessionConnected(sessionId)){
 					rdpClient = sessions.reconnectRdpSession(sessionId,client);
@@ -44,8 +44,6 @@ module.exports = function (server,file_path) {
 					rdpClient = sessions.startRdpSession(sessionId,width,height,client,file_path);
 				}
 			}
-			
-			
 		}).on('mouse', function (x, y, button, isPressed) {
 			if (!rdpClient)  return;
 			rdpClient.sendPointerEvent(x, y, button, isPressed);
@@ -61,7 +59,7 @@ module.exports = function (server,file_path) {
 			if (!rdpClient) return;
 				rdpClient.sendKeyEventScancode(code, isPressed);
 
-		}).on('disconnect', function() {
+		}).on('closerdp', function() {
 			if(!rdpClient) return;
 				rdpClient.close();
 		});
