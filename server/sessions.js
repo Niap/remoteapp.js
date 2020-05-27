@@ -48,8 +48,14 @@ var reconnectRdpSession = function(sessionId,client){
     if(session == null)
         return null;
     session['socketClient'] = client;
+    let rdpSession = sessions[sessionId]['rdpClient'];
+    rdpSession.requestKeyframe();
+    rdpSession.sendPointerEvent(0,0,2,true);
+    rdpSession.sendPointerEvent(0,0,2,false);
+    rdpSession.sendPointerEvent(200,200,1,true);
+    rdpSession.sendPointerEvent(200,200,1,false);
     client.emit('rdp-connect');
-    return sessions[sessionId]['rdpClient'];
+    return rdpSession;
 }
 
 var startRdpSession = function(sessionId,width,height,client,file_path){
@@ -72,20 +78,7 @@ var startRdpSession = function(sessionId,width,height,client,file_path){
 	rdpClient.on('connect', function () {
 		sessions[sessionId]['socketClient'].emit('rdp-connect');
 	}).on('bitmap',function(bitmap) {
-		sharp(bitmap.buffer,{
-			raw: {
-			  width: bitmap.w,
-			  height: bitmap.h,
-			  channels: 4,
-			},
-		}).removeAlpha().png({
-			compressionLevel : 3
-		}).toBuffer().then( data => {
-			bitmap.buffer = "data:image/png;base64,"+new Buffer(data.buffer).toString('base64');
-			sessions[sessionId]['socketClient'].emit('rdp-bitmap', bitmap);
-		}).catch( err => { 
-			console.log("sharp error"+err)
-		});
+        sessions[sessionId]['socketClient'].emit('rdp-bitmap', bitmap);
 	}).on('close', function(msg) {
         var socket = sessions[sessionId]['socketClient'];
         socket.emit('rdp-close',msg);

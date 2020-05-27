@@ -124,6 +124,7 @@ class Session extends React.Component{
             this.count++;
         }
     }
+    
 
     componentDidMount(){
         this.socket = io(window.location.protocol + "//" + window.location.host).on('rdp-connect', ()=>{
@@ -131,13 +132,13 @@ class Session extends React.Component{
             this.setState({
                 ready:true
             })
-        }).on('rdp-bitmap', (bitmap)=>{       
-            var image = new Image();
-			image.src = bitmap.buffer;
-			image.onload = ()=>{
-                this.ctx.drawImage(image, bitmap.x, bitmap.y);
-                this.computedFps();
-			}
+        }).on('rdp-bitmap', (bitmap)=>{
+            for(let i=0;i<bitmap.h;i++){
+                let offset = ( (bitmap.y+i) * this.canvas.width + bitmap.x)*bitmap.bpp;
+                this.imageData.data.set(new Uint8ClampedArray(bitmap.buffer.slice(i*bitmap.w*bitmap.bpp,(i+1)*bitmap.w*bitmap.bpp)),offset);
+            }
+            this.computedFps();
+            this.ctx.putImageData(this.imageData,0,0);
         }).on('rdp-close', (data)=>{
             this.setState({
                 ready:true,
@@ -153,10 +154,12 @@ class Session extends React.Component{
         });
         this.sessionId = this.props.match.params.sessionId;
         this.fps = this.refs.fps;
+
         this.canvas = this.refs.player;
         this.ctx = this.canvas.getContext("2d");
         this.canvas.width = document.body.clientWidth;
         this.canvas.height = document.body.clientHeight;
+        this.imageData = this.ctx.createImageData(this.canvas.width,this.canvas.height);
         this.socket.emit('start', this.sessionId,this.canvas.width, this.canvas.height );
     }
 
