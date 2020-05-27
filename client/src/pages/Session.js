@@ -112,6 +112,18 @@ class Session extends React.Component{
         this.socket.emit('closerdp');
         this.unbind();
     }
+    time = 0;
+    count = 0;
+    computedFps() {
+        let now = new Date().getTime();
+        if (now - this.time >= 1000) {
+            this.time = now;
+            this.fps.innerHTML = this.count;
+            this.count = 0;
+        } else {
+            this.count++;
+        }
+    }
 
     componentDidMount(){
         this.socket = io(window.location.protocol + "//" + window.location.host).on('rdp-connect', ()=>{
@@ -119,11 +131,12 @@ class Session extends React.Component{
             this.setState({
                 ready:true
             })
-        }).on('rdp-bitmap', (bitmap)=>{
+        }).on('rdp-bitmap', (bitmap)=>{       
             var image = new Image();
 			image.src = bitmap.buffer;
 			image.onload = ()=>{
-				this.ctx.drawImage(image, bitmap.x, bitmap.y);
+                this.ctx.drawImage(image, bitmap.x, bitmap.y);
+                this.computedFps();
 			}
         }).on('rdp-close', (data)=>{
             this.setState({
@@ -139,6 +152,7 @@ class Session extends React.Component{
             })
         });
         this.sessionId = this.props.match.params.sessionId;
+        this.fps = this.refs.fps;
         this.canvas = this.refs.player;
         this.ctx = this.canvas.getContext("2d");
         this.canvas.width = document.body.clientWidth;
@@ -149,7 +163,7 @@ class Session extends React.Component{
     render(){
         return (
             <div style={{width:"100%",height:"100%"}}>
-                
+                <span ref="fps" style={{position:"absolute",left:20,top:20}}></span>
                 {this.state.result?<Result
                     style={{paddingTop:240}}
                     status="warning"
