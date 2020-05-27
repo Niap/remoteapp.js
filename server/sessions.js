@@ -48,8 +48,14 @@ var reconnectRdpSession = function(sessionId,client){
     if(session == null)
         return null;
     session['socketClient'] = client;
+    let rdpSession = sessions[sessionId]['rdpClient'];
+    rdpSession.requestKeyframe();
+    rdpSession.sendPointerEvent(0,0,2,true);
+    rdpSession.sendPointerEvent(0,0,2,false);
+    rdpSession.sendPointerEvent(200,200,1,true);
+    rdpSession.sendPointerEvent(200,200,1,false);
     client.emit('rdp-connect');
-    return sessions[sessionId]['rdpClient'];
+    return rdpSession;
 }
 
 var startRdpSession = function(sessionId,width,height,client,file_path){
