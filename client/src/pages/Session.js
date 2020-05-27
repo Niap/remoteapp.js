@@ -163,7 +163,7 @@ class Session extends React.Component{
     render(){
         return (
             <div style={{width:"100%",height:"100%"}}>
-                <span ref="fps" style={{position:"absolute",left:20,top:20}}></span>
+                <span ref="fps" style={{position:"absolute",left:20,top:20,color:"red"}}></span>
                 {this.state.result?<Result
                     style={{paddingTop:240}}
                     status="warning"
