@@ -121,6 +121,8 @@ class Session extends React.Component{
             this.setState({
                 ready:true
             })
+        }).on('rdp-pointer',(bitmap)=>{
+            this.ctx.canvas.style.cursor = "url("+bitmap.buffer+"), auto";
         }).on('rdp-bitmap', (bitmap)=>{
             for(let i=0;i<bitmap.h;i++){
                 let offset = ( (bitmap.y+i) * this.canvas.width + bitmap.x)*bitmap.bpp;
