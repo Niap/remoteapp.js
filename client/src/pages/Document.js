@@ -1,4 +1,4 @@
-import { Layout,Table, Button, Space,Row,Col,Modal,Input,message,Upload } from 'antd';
+import { Layout,Table, Button, Space,Row,Col,message,Upload } from 'antd';
 import React from 'react';
 import { LeftOutlined,FileOutlined } from '@ant-design/icons';
 import {RequestListFile,RequestDelFile,RequestUploadFile} from "../Services";

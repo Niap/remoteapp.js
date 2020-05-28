@@ -1,7 +1,8 @@
 import React from 'react';
-import {Spin,Result,message,Button} from 'antd';
+import {Spin,Result,message} from 'antd';
 import io from "socket.io-client";
 import {MouseMap,KeyMap} from "../KeyMaps";
+import {api} from "../Request";
 
 
 class Session extends React.Component{
@@ -57,6 +58,7 @@ class Session extends React.Component{
         if(e.key === "v" && e.ctrlKey){
             navigator.clipboard.readText().then((clipboardData)=>{
                 if(clipboardData !== window.lastClipboardData){
+                    debugger;
                     window.lastClipboardData = clipboardData
                     window.preventVkey = true
                     this.socket.emit('paste', clipboardData, ()=>{
@@ -112,22 +114,9 @@ class Session extends React.Component{
         this.socket.emit('closerdp');
         this.unbind();
     }
-    time = 0;
-    count = 0;
-    computedFps() {
-        let now = new Date().getTime();
-        if (now - this.time >= 1000) {
-            this.time = now;
-            this.fps.innerHTML = this.count;
-            this.count = 0;
-        } else {
-            this.count++;
-        }
-    }
-    
-
+   
     componentDidMount(){
-        this.socket = io(window.location.protocol + "//" + window.location.host).on('rdp-connect', ()=>{
+        this.socket = io( api ).on('rdp-connect', ()=>{
             this.bind();
             this.setState({
                 ready:true
@@ -137,7 +126,6 @@ class Session extends React.Component{
                 let offset = ( (bitmap.y+i) * this.canvas.width + bitmap.x)*bitmap.bpp;
                 this.imageData.data.set(new Uint8ClampedArray(bitmap.buffer.slice(i*bitmap.w*bitmap.bpp,(i+1)*bitmap.w*bitmap.bpp)),offset);
             }
-            this.computedFps();
             this.ctx.putImageData(this.imageData,0,0);
         }).on('rdp-close', (data)=>{
             this.setState({
@@ -153,7 +141,6 @@ class Session extends React.Component{
             })
         });
         this.sessionId = this.props.match.params.sessionId;
-        this.fps = this.refs.fps;
 
         this.canvas = this.refs.player;
         this.ctx = this.canvas.getContext("2d");
@@ -166,7 +153,6 @@ class Session extends React.Component{
     render(){
         return (
             <div style={{width:"100%",height:"100%"}}>
-                <span ref="fps" style={{position:"absolute",left:20,top:20,color:"red"}}></span>
                 {this.state.result?<Result
                     style={{paddingTop:240}}
                     status="warning"
