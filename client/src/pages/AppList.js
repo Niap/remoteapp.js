@@ -82,7 +82,12 @@ class AppList extends React.Component{
     return (
       <Layout style={{background:"transparent"}}>
         <Header style={{ position: 'fixed', zIndex: 1, width: '100%',background:"#fff"}}>
-          <a href="#/applist">LOGO</a>
+        <div style={{display:"flex"}}>
+          <a href="#/applist" >LOGO</a>
+          <div style={{flex:1}}/>
+          <a href="#/setting" >设置</a>
+        </div>
+         
         </Header>
         <Content style={{ padding: '0 8%', marginTop: 100 }}>
           <div style={{ padding: 24, minHeight: 380 }}>

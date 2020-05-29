@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-export const api = "";
+export const api = window.location.protocol + "//" + window.location.host;
 
 export function getImagePath(image){
     return api+'icon/'+image;

@@ -22,6 +22,7 @@ var express = require('express');
 var http = require('http');
 var sessions = require('./server/sessions');
 var apps = require('./server/apps');
+var setting = require('./server/setting');
 var path = require('path');
 var multer  = require('multer');
 
@@ -103,6 +104,24 @@ app.post('/api/file/delete',function(req,res){
 			
 		}
 	});
+})
+
+//setting
+app.get('/api/setting',function(req,res){
+    var server  = setting.get();
+	res.json({
+		error:0,
+		data:server
+	})
+})
+app.post('/api/setting',function(req,res){
+	setting.save(req.body);
+	res.json({
+		error:0,
+		data:{
+
+		}
+	})
 })
 //app
 app.get('/api/applist',function(req,res){
