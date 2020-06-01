@@ -3,10 +3,10 @@ import axios from 'axios'
 export const api = window.location.protocol + "//" + window.location.host;
 
 export function getImagePath(image){
-    return api+'icon/'+image;
+    return api+'/icon/'+image;
 }
 export function getFilesPath(image){
-    return api+'files/'+image;
+    return api+'/files/'+image;
 }
 
 const service = axios.create({

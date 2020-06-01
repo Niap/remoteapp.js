@@ -1,7 +1,1 @@
-{
-    "host":"192.168.13.115",
-    "domain":null,
-    "username":"niap",
-    "password":"niap",
-    "port":3389
-}
+{"host":"192.168.56.102","port":3389,"username":"niap","password":"niap","domain":null}

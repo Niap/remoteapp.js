@@ -108,7 +108,7 @@ class AppForm extends React.Component{
                         {iconUrl ? <img src={getImagePath(iconUrl)} alt="icon" style={{ width: 60,marginRight:10,marginLeft:10 }} /> : null}
                         <Upload 
                           showUploadList={false}
-                          action={`${api}api/upload/icon`}
+                          action={`${api}/api/upload/icon`}
                           onChange={this.handleChange}
                           
                         >
