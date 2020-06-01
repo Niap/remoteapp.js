@@ -158,6 +158,12 @@ app.get('/api/appdel/:appId',function(req,res){
 })
 app.post('/api/appadd',function(req,res){
 	var app = req.body;
+	if(app['cmd']==null){
+		app['cmd'] = null;
+	}
+	if(app['icon']==null){
+		app['icon'] = null;
+	}
 	apps.addOne(app);
 	res.json({
 		error:0,

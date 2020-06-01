@@ -48,7 +48,6 @@ class AppForm extends React.Component{
   componentDidMount(){
     let appid = this.props.match.params.appid;
     if(appid !== "add"){
-     
       RequestAppInfo(appid).then((response)=>{
         this.setState({
           iconUrl:response.data.data.app.icon
@@ -103,7 +102,6 @@ class AppForm extends React.Component{
                     <Form.Item
                         label="图标"
                         name="icon"
-                        rules={[{ required: true, message: '请输入图标' }]}
                     >
                         {iconUrl ? <img src={getImagePath(iconUrl)} alt="icon" style={{ width: 60,marginRight:10,marginLeft:10 }} /> : null}
                         <Upload 
