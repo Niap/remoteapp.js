@@ -56,23 +56,8 @@ class Session extends React.Component{
     handleKeyDown = (e)=>{
         if (!this.socket) return;
         if(e.key === "v" && e.ctrlKey){
-            navigator.clipboard.readText().then((clipboardData)=>{
-                if(clipboardData !== window.lastClipboardData){
-                    debugger;
-                    window.lastClipboardData = clipboardData
-                    window.preventVkey = true
-                    this.socket.emit('paste', clipboardData, ()=>{
-                        this.socket.emit('scancode', 0x001D, true);
-                        this.socket.emit('scancode', 0x002F, true);
-                        this.socket.emit('scancode', 0x002F, false);
-                        this.socket.emit('scancode', 0x001D, false);
-                    });
-                }else{
-                    this.socket.emit('scancode', KeyMap[e.code], true);
-                }
-            },function(){
-                message.warning("读取剪切板失败");	
-            });
+            window.preventVkey = true;
+            return true;
         }else{
             this.socket.emit('scancode', KeyMap[e.code], true);
         }
@@ -84,11 +69,27 @@ class Session extends React.Component{
         if (!this.socket) return;
         if(window.preventVkey){
             window.preventVkey = false;
+            return true;
         }else{
             this.socket.emit('scancode', KeyMap[e.code], false);
         }
         e.preventDefault();
         return false;
+    }
+
+    handlePaste = (e)=>{
+        debugger;
+        var clipboardData = e.clipboardData.getData("Text");
+        if( clipboardData !== window.lastClipboardData){
+            window.lastClipboardData = clipboardData
+            this.socket.emit('paste', clipboardData, ()=>{
+                this.socket.emit('scancode', 0x001D, true);
+                this.socket.emit('scancode', 0x002F, true);
+                this.socket.emit('scancode', 0x002F, false);
+                this.socket.emit('scancode', 0x001D, false);
+            });
+        }
+       
     }
 
     unbind = ()=>{
@@ -99,6 +100,7 @@ class Session extends React.Component{
         this.canvas.removeEventListener('mousewheel',this.handleMouseWheel);
         window.removeEventListener("keydown",this.handleKeyDown);
         window.removeEventListener("keyup",this.handleKeyUp);
+        window.removeEventListener("paste",this.handlePaste);
     }
     bind=()=>{
         this.canvas.addEventListener('mousemove', this.handleMouseMove );
@@ -108,6 +110,7 @@ class Session extends React.Component{
         this.canvas.addEventListener('mousewheel',  this.handleMouseWheel );
         window.addEventListener('keydown', this.handleKeyDown );
         window.addEventListener('keyup', this.handleKeyUp );
+        window.addEventListener("paste",this.handlePaste);
     }
 
     componentWillUnmount(){
@@ -161,7 +164,7 @@ class Session extends React.Component{
                     title={this.state.resultText}
                 />:null}
                 {this.state.ready?null:<Spin style={{position:"absolute",left:"50%",top:"50%"}} />}
-                {!this.state.result?<canvas ref="player"></canvas>:null}
+                {!this.state.result?<canvas tabIndex="0" ref="player"></canvas>:null}
             </div>
         );
     }

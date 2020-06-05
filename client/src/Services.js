@@ -62,3 +62,17 @@ export async function RequestUploadFile(file) {
     data: forms
   })
 }
+
+export async function RequestSetting() {
+  return request(`/api/setting`, {
+    method: 'GET'
+  });
+}
+
+export async function RequestSaveSetting(data) {
+  return request(`/api/setting`, {
+    method: 'POST',
+    data:data
+  });
+}
+
