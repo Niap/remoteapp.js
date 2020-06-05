@@ -127,11 +127,11 @@ class Session extends React.Component{
         }).on('rdp-pointer',(bitmap)=>{
             this.ctx.canvas.style.cursor = "url("+bitmap.buffer+"), auto";
         }).on('rdp-bitmap', (bitmap)=>{
-            var image = new Image();
-			image.src = bitmap.buffer;
-			image.onload = ()=>{
-				this.ctx.drawImage(image, bitmap.x, bitmap.y);
-			}
+            for(let i=0;i<bitmap.h;i++){
+                let offset = ( (bitmap.y+i) * this.canvas.width + bitmap.x)*bitmap.bpp;
+                this.imageData.data.set(new Uint8ClampedArray(bitmap.buffer.slice(i*bitmap.w*bitmap.bpp,(i+1)*bitmap.w*bitmap.bpp)),offset);
+            }
+            this.ctx.putImageData(this.imageData,0,0);
         }).on('rdp-close', (data)=>{
             this.setState({
                 ready:true,
