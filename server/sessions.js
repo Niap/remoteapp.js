@@ -78,7 +78,20 @@ var startRdpSession = function(sessionId,width,height,client,file_path){
 	rdpClient.on('connect', function () {
 		sessions[sessionId]['socketClient'].emit('rdp-connect');
 	}).on('bitmap',function(bitmap) {
-        sessions[sessionId]['socketClient'].emit('rdp-bitmap', bitmap);
+        sharp(bitmap.buffer,{
+            raw: {
+              width: bitmap.w,
+              height: bitmap.h,
+              channels: 4,
+            },
+        }).png({
+			compressionLevel : 3
+		}).toBuffer().then( data => {
+            bitmap.buffer = "data:image/png;base64,"+new Buffer(data.buffer).toString('base64');
+            sessions[sessionId]['socketClient'].emit('rdp-bitmap', bitmap);
+        }).catch( err => { 
+            console.log(err)
+        });
 	}).on('pointer',function(bitmap){
         sharp(bitmap.buffer,{
 			raw: {
