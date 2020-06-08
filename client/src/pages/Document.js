@@ -113,7 +113,7 @@ class Document extends React.Component{
         let { fileList} = this.state;
         return (
             <Layout style={{background:"transparent"}}>
-                <Header style={{ position: 'fixed', zIndex: 1, width: '100%',background:"#fff"}}>
+                <Header style={{ position: 'fixed', zIndex: 1, width: '100%',padding: '0 8%',background:"#fff"}}>
                     <a href="#/applist" style={{color:"#0066ff",fontSize:20}} ><LeftOutlined />返回应用页</a>
                 </Header>
                 <Content style={{ padding: '0 8%', marginTop: 100 }}>
